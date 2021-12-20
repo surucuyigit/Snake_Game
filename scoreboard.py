@@ -1,17 +1,29 @@
-import turtle
+import turtle, os
 from turtle import Turtle
+
 ALIGN = 'center'
 FONT = ('Arial', 12, 'bold')
 GAME_OVER_FONT = ('Arial', 24, 'bold')
+FILE_PATH = 'data.txt'
 
+def is_file_empty(file_path):
+    """ Checking if the file is existing or not """
+    # Check if file exist and it is empty
+    return not os.path.exists(file_path)  # if file not created before, return True
 
 class Scoreboard(Turtle):
 
     def __init__(self):
         super().__init__()
         self.score = 0
-        with open("data.txt") as data:
-            self.high_score = int(data.read())
+        if is_file_empty(FILE_PATH):                    
+            with open(FILE_PATH, mode='w+') as data:    # if file not created before, create it 
+                data.write('0')                         
+                data.seek(0)                            # return the beginning of the file, otherwise we read empty string.
+                self.high_score = int(data.read())
+        else:
+            with open(FILE_PATH) as data:               # if file is already created before, just read it.
+                self.high_score = int(data.read())
         self.hideturtle()
         self.penup()
         self.color("white")
@@ -40,7 +52,7 @@ class Scoreboard(Turtle):
         if self.score > self.high_score:
             self.high_score = self.score
             self.write(f"New highest score: {self.high_score}", align=ALIGN, font=FONT)
-            with open("data.txt", mode="w") as data:
+            with open(FILE_PATH, mode="w") as data:
                 data.write(f"{self.high_score}")
         else:
             self.write(f"Highest score: {self.high_score}", align=ALIGN, font=FONT)
